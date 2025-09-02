@@ -1,0 +1,34 @@
+<script>
+// Function to get URL parameter by name
+function getParameterByName(name) {
+    name = name.replace(/[\[\]]/g, "\\$&");
+    let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(window.location.href);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+// Capture GCLID from URL
+let gclid = getParameterByName('gclid');
+
+// If found, store it in a cookie for 90 days
+if (gclid) {
+    document.cookie = "gclid=" + gclid + "; path=/; max-age=" + (90*24*60*60);
+}
+// Function to read cookie
+function getCookie(name) {
+    let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+}
+// Wait for DOM
+document.addEventListener("DOMContentLoaded", function() {
+    let gclidCookie = getCookie("gclid");
+    if (gclidCookie) {
+        // Insert GCLID value into all hidden form fields named 'gclid'
+        document.querySelectorAll('input[name="hidden-1"]').forEach(function(input) {
+            input.value = window.location.href+"?gclid="+gclidCookie;
+        });
+    }
+});
+</script>
